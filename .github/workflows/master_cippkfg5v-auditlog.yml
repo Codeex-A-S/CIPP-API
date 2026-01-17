@@ -14,12 +14,22 @@ env:
 
 jobs:
   deploy:
-    runs-on: windows-latest
-    
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
+
     steps:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@v4
       
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_42CD5B7C2344445AAEB354EDBDED0E08 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_4C53BBAC06D14BFCA921A978B538E1C8 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_B76B9B7EDECE45D59D4581EDE2900A6F }}
+
       - name: 'Run Azure Functions Action'
         uses: Azure/functions-action@v1
         id: fa
@@ -27,4 +37,4 @@ jobs:
           app-name: 'cippkfg5v-auditlog'
           slot-name: 'Production'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_7C1AA2919D1F46F8A8C81881449ADB43 }}
+          
